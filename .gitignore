@@ -12,12 +12,12 @@ __pycache__/
 # files and the per-context RTE/_<build>_<target>/ headers the toolbox writes.
 out/
 tmp/
-.cmsis/
 *.cbuild-idx.yml
 *.cbuild-pack.yml
 *.cbuild-mlops.yml
 *.update@*
 .cmd.jlink
+tools-environment.yml
 
 # Compiler-generated dependencies
 *.d
