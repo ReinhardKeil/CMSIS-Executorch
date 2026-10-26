@@ -20,7 +20,8 @@ import venv
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-VENV_DIR = HERE / ".venv"
+WORKSPACE_DIR = HERE.parent
+VENV_DIR = WORKSPACE_DIR / ".venv"
 
 # ExecuTorch 1.5 declares requires-python = ">=3.10,<3.15" in its pyproject.toml,
 # but the tosa-tools 2026.5.0 it pins for the Arm backend (see
@@ -53,8 +54,8 @@ def check_host_python() -> None:
             f"error: ExecuTorch needs Python >={lo},<{hi}; this is {have}\n"
             f"  ({sys.executable})\n"
             "Re-run with a supported interpreter, e.g.\n"
-            "  PYTHON=python3.12 ./setup_venv.sh        (Linux/macOS)\n"
-            "  py -3.12 setup_venv.py                   (Windows)"
+            "  PYTHON=python3.12 ./model_conversion/setup_venv.sh  (Linux/macOS)\n"
+            "  py -3.12 model_conversion/setup_venv.py             (Windows)"
         )
 
 
@@ -133,7 +134,7 @@ def smoke_test(python: Path) -> None:
         sys.exit(
             "error: the executorch Arm quantizer does not import; the torch and "
             "executorch versions in .venv are probably mismatched.\n"
-            "Recreate it with: python setup_venv.py --recreate"
+            "Recreate it with: python model_conversion/setup_venv.py --recreate"
         )
 
 

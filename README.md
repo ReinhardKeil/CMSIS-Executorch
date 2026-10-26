@@ -134,22 +134,22 @@ venv setup.
 On Linux or macOS:
 
 ```bash
-./setup_venv.sh
+./model_conversion/setup_venv.sh
 ```
 
 On Windows:
 
 ```powershell
-.\setup_venv.bat
+.\model_conversion\setup_venv.bat
 ```
 
-The setup script creates `.venv/` and installs the packages required to
+The setup script creates `.venv/` in `${workspaceFolder}` and installs the packages required to
 quantize and export the ML model. It is safe to run again; use `--recreate` when
 you want a completely new environment. The wrappers use `python3` (`python` on
-Windows); point them at another interpreter with `PYTHON=python3.12 ./setup_venv.sh`.
+Windows); point them at another interpreter with `PYTHON=python3.12 ./model_conversion/setup_venv.sh`.
 
 With [Astral's uv](https://docs.astral.sh/uv/getting-started/installation/) on `PATH`,
-`./setup_venv.sh --uv --python 3.12` (or `.\setup_venv.bat ...`) creates the
+`./model_conversion/setup_venv.sh --uv --python 3.12` (or `.\model_conversion\setup_venv.bat ...`) creates the
 environment with `uv venv` for that Python version, downloading the interpreter
 if needed, and installs with `uv pip`. Add `--recreate` to change the Python
 version of an existing environment.
@@ -169,13 +169,15 @@ RTE configuration is committed, so no `--update-rte` is required.)
 #### 2. Create the AI layer
 
 ```bash
-python3 create_ai_layer.py cmsis-executorch.cbuild-mlops.yml
+python3 model_conversion/create_ai_layer.py cmsis-executorch.cbuild-mlops.yml
 ```
 
-This is the MLOps step. The script reads the NPU and Vela settings from the
-file, quantizes and exports `model/model.py` for that NPU, and writes the
-complete AI layer into `ai_layer/`: the component selection and the ML model as a
-C array. It runs itself in `.venv` when started with another interpreter (use
+This is the MLOps step. The script uses `.venv` from `${workspaceFolder}`. It
+treats the directory containing the MLOps file as the solution directory,
+reads `model/model.py` and every MLOps-relative path from there, and writes the
+complete AI layer into that solution's `ai_layer/`. It therefore supports
+multiple solutions in workspace subdirectories while sharing one conversion
+environment. The script restarts itself in `.venv` when necessary (use
 `python` on Windows).
 
 #### 3. Build the application
@@ -225,7 +227,7 @@ mlops:
 `cmsis-executorch.cbuild-mlops.yml`, which contains the processor, NPU
 and Vela options, and the FVP simulation target-set as the `simulator:` to test
 on.
-`create_ai_layer.py` reads those options and passes all of them to ExecuTorch's
+`model_conversion/create_ai_layer.py` reads those options and passes all of them to ExecuTorch's
 `EthosUCompileSpec`, so the target configuration is never duplicated in
 Python. The two extra keys under `model:` are parameters of the ML model itself;
 the toolbox passes them through and the script hands them to `model/model.py`.
@@ -241,7 +243,7 @@ See [the MLOps flow](documentation/mlops-flow.md) for a detailed walkthrough.
 
 The [ExecuTorch pack](https://www.keil.arm.com/packs/executorch-pytorch/)
 provides the runtime, backends, and individual operators as selectable CMSIS
-components. `create_ai_layer.py` examines the exported program and writes
+components. `model_conversion/create_ai_layer.py` examines the exported program and writes
 `ai_layer/ai_layer.clayer.yml` so only the required components are linked.
 Because the layer is complete before the build starts, an ML model change that
 changes the operator set needs nothing more than re-running steps 2 and 3.
@@ -256,7 +258,7 @@ the quantizer is calibrated with; give it representative data for a trained
 ML model. The runner in `src/app_main.cpp` builds its input tensor with the same
 fixed shape and prints the output as ten floats, so an ML model with another
 input shape or output needs matching changes there. Then re-run
-`create_ai_layer.py` and build.
+`model_conversion/create_ai_layer.py` and build.
 
 Give a vision ML model its input as NHWC, the layout of a camera frame, as
 `model/model.py` does: the ML model permutes it to the NCHW its convolutions take,
@@ -293,9 +295,11 @@ the current status of all three workflows.
 | `cmsis-executorch-u55.csolution.yml` | Corstone-300 / Ethos-U55-128 solution and MLOps configuration |
 | `cmsis-executorch.cproject.yml` | Application project: sources plus the Board and AI layers |
 | `model/model.py` | Starter TinyCNN ML model |
-| `create_ai_layer.py` | Exports the ML model for the target and writes the AI layer |
+| `model_conversion/create_ai_layer.py` | Exports the ML model for the target and writes the AI layer |
+| `model_conversion/README.md`, `model_conversion/model_conversion-specification.md` | Usage and specification for the model-conversion toolset |
+| `model_conversion/test/` | Unit tests for the AI-layer generator |
 | `ai_layer/` | Generated: component selection and the embedded ML model data |
-| `setup_venv.py` (`.sh` / `.bat`) | Creates the Python environment for the export |
+| `model_conversion/setup_venv.py` (`.sh` / `.bat`) | Creates the Python environment for the export |
 | `.vscode.d/tasks.json` | The VS Code tasks (venv setup, Create AI layer) merged by the CMSIS Solution extension |
 | `.vscode/fvp.sh`, `.vscode/fvp.Dockerfile`, `.vscode/launch.json.mac` | macOS only: runs the FVP in Docker, and the debug configuration that waits for it |
 | `board/Corstone-300/`, `board/Corstone-320/` | Platform support and FVP configurations |
@@ -307,7 +311,10 @@ the current status of all three workflows.
 ## Usage notes
 
 The generated `ai_layer/` is target-specific. After switching targets, run
-`create_ai_layer.py` with the selected solution's `*.cbuild-mlops.yml`.
+`model_conversion/create_ai_layer.py` with the selected solution's
+`*.cbuild-mlops.yml`. In VS Code, the task obtains its path from
+`${command:cmsis-csolution.getSolutionDir}`; `.venv` remains under
+`${workspaceFolder}`.
 
 ## License
 

@@ -5,9 +5,9 @@
             "label": "Create Python environment (pip)",
             "detail": "Create .venv with the installed Python and pip, then install the model-export dependencies",
             "type": "shell",
-            "command": "./setup_venv.sh",
+            "command": "./model_conversion/setup_venv.sh",
             "windows": {
-                "command": ".\\setup_venv.bat"
+                "command": ".\\model_conversion\\setup_venv.bat"
             },
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -18,9 +18,9 @@
             "label": "Create Python environment (uv)",
             "detail": "Create .venv with uv, optionally downloading the selected Python version; requires uv on PATH",
             "type": "shell",
-            "command": "./setup_venv.sh",
+            "command": "./model_conversion/setup_venv.sh",
             "windows": {
-                "command": ".\\setup_venv.bat"
+                "command": ".\\model_conversion\\setup_venv.bat"
             },
             "args": ["--uv", "--python", "${input:setupPythonVersion}"],
             "options": {
@@ -34,8 +34,8 @@
             "type": "shell",
             "command": "${workspaceFolder}/.venv/bin/python",
             "args": [
-                "create_ai_layer.py",
-                "${command:cmsis-csolution.getSolutionName}.cbuild-mlops.yml"
+                "${workspaceFolder}/model_conversion/create_ai_layer.py",
+                "${command:cmsis-csolution.getSolutionDir}/${command:cmsis-csolution.getSolutionName}.cbuild-mlops.yml"
             ],
             "windows": {
                 "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe"

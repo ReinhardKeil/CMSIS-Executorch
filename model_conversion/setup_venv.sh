@@ -4,9 +4,9 @@
 #
 # Linux/macOS wrapper. All the logic lives in setup_venv.py so the same setup
 # runs on Windows too; this only picks an interpreter. Override with e.g.
-#   PYTHON=python3.12 ./setup_venv.sh
+#   PYTHON=python3.12 ./model_conversion/setup_venv.sh
 # With --uv, uv supplies the interpreter too (and can download one), e.g.
-#   ./setup_venv.sh --uv --python 3.12
+#   ./model_conversion/setup_venv.sh --uv --python 3.12
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 use_uv=false

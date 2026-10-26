@@ -55,17 +55,17 @@ jobs:
       - name: Cache model-export environment
         uses: actions/cache@v6
         with:
-          key: model-export-${{ runner.os }}-${{ hashFiles('requirements*.txt', 'setup_venv.py') }}
+          key: model-export-${{ runner.os }}-${{ hashFiles('model_conversion/requirements*.txt', 'model_conversion/setup_venv.py') }}
           path: .venv
 
       - name: Create model-export environment
-        run: ./setup_venv.sh
+        run: ./model_conversion/setup_venv.sh
 
       - name: Generate U55 MLOps information
         run: cbuild setup cmsis-executorch-u55.csolution.yml --active SSE-300-U55 --packs
 
       - name: Create U55 AI layer
-        run: .venv/bin/python create_ai_layer.py cmsis-executorch-u55.cbuild-mlops.yml
+        run: .venv/bin/python model_conversion/create_ai_layer.py cmsis-executorch-u55.cbuild-mlops.yml
 
       - name: Build SSE-300-U55
         run: cbuild cmsis-executorch-u55.csolution.yml --active SSE-300-U55 --packs --toolchain ${{ matrix.toolchain }}

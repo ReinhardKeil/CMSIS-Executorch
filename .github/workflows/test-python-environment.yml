@@ -37,11 +37,11 @@ jobs:
 
       - name: Create model-export environment
         if: runner.os != 'Windows'
-        run: ./setup_venv.sh
+        run: ./model_conversion/setup_venv.sh
 
       - name: Create model-export environment
         if: runner.os == 'Windows'
-        run: .\setup_venv.bat
+        run: .\model_conversion\setup_venv.bat
 
       - name: Check model-export environment
         shell: bash
@@ -52,7 +52,8 @@ jobs:
             PY=.venv/bin/python
           fi
           "${PY}" -c "import executorch.backends.arm.quantizer.quantization_annotator; print('arm quantizer OK')"
-          "${PY}" -c "import create_ai_layer; print('create_ai_layer.py OK')"
+          "${PY}" -c "import model_conversion.create_ai_layer; print('model_conversion/create_ai_layer.py OK')"
+          "${PY}" -m unittest discover -s model_conversion/test -p "test_*.py" -v
 
       - name: Check resolved package versions
         shell: bash

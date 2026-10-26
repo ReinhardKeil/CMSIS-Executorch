@@ -82,7 +82,7 @@ git submodule update --init --recursive
 > flatc --cpp --cpp-std c++11 --gen-mutable --scoped-enums <schema>.fbs
 > ```
 >
-> `flatc` ships inside the executorch wheel — after `./setup_venv.sh` it is at
+> `flatc` ships inside the executorch wheel — after `./model_conversion/setup_venv.sh` it is at
 > `.venv/bin/flatc`.
 
 The cross-compile that produces those headers is a plain CMake build of the
@@ -165,9 +165,9 @@ in order:
 4. **Rebuild the venv, the AI layer and the project:**
 
    ```bash
-   ./setup_venv.sh --recreate
+   ./model_conversion/setup_venv.sh --recreate
    cbuild setup cmsis-executorch.csolution.yml --active SSE-320-U85 --packs
-   python3 create_ai_layer.py cmsis-executorch.cbuild-mlops.yml
+   python3 model_conversion/create_ai_layer.py cmsis-executorch.cbuild-mlops.yml
    cbuild cmsis-executorch.csolution.yml --active SSE-320-U85
    ```
 

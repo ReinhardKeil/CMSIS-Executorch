@@ -6,7 +6,7 @@ REM Windows wrapper. All the logic lives in setup_venv.py. "python" rather
 REM than "python3": python3.exe is not reliably present on Windows, while
 REM python3 is the reliable name on Linux/macOS -- which is why this wrapper
 REM and setup_venv.sh differ. With --uv, uv supplies the interpreter, e.g.
-REM   setup_venv.bat --uv --python 3.12
+REM   model_conversion\setup_venv.bat --uv --python 3.12
 setlocal
 set "SETUP_USE_UV="
 set "SETUP_UV_PYTHON=>=3.10,<3.14"

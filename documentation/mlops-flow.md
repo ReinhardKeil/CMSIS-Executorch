@@ -87,8 +87,12 @@ the flow also works on a checkout without a generated layer.
 
 ## 2. `create_ai_layer.py` turns `*.cbuild-mlops.yml` into the AI layer
 
-`python create_ai_layer.py cmsis-executorch.cbuild-mlops.yml` stands in
-for an MLOps system. It reads the file and:
+`python model_conversion/create_ai_layer.py cmsis-executorch.cbuild-mlops.yml` stands in
+for an MLOps system. The workspace directory owns the shared `.venv`; the
+directory containing the selected MLOps file is the solution directory. All
+paths from that file, including `model/model.py`, are resolved from the
+solution directory. This supports multiple solutions in workspace
+subdirectories. The converter reads the file and:
 
 1. builds ExecuTorch's `EthosUCompileSpec` from `npu:` and `vela:` -- the
    accelerator (`ethos-u85-256`), system config and memory mode come from

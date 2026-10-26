@@ -1,0 +1,33 @@
+TODO
+====
+
+- Expand support to both Zephyr-based and CMSIS-based workflows.
+
+- Add Cortex-M-only targets alongside the existing Cortex-M/Ethos-U targets.
+
+- Support multiple models declared in the `mlops.model.inputs` list of the
+  `*.csolution.yml` in each workflow directory. `multi-model-example` can
+  be a reference for flexible per-model paths, parameters, and options.
+
+  Requirement: `create_ai_layer.py` shall process every entry in
+  `mlops.model.inputs` and resolve its model path relative to the solution
+  directory instead of assuming a fixed `model/model.py` location.
+
+- Put each solution and its generated files in a dedicated subdirectory.
+
+  Directory        | Scope                              | Contents
+  -----------------|------------------------------------|--------------------------
+  cmsis-u55        | CMSIS workflow for Cortex-M/U55    | Solution with project, layers, config
+  cmsis-u85        | CMSIS workflow for Cortex-M/U85    | Solution with project, layers, config
+  cmsis-m          | CMSIS workflow for Cortex-M only   | Solution with project, layers, config
+  zephyr-u55       | Zephyr workflow for Cortex-M/U55   | Solution with Zephyr app, config
+  zephyr-u85       | Zephyr workflow for Cortex-M/U85   | Solution with Zephyr app, config
+  zephyr-m         | Zephyr workflow for Cortex-M only  | Solution with Zephyr app, config
+  model_conversion | Shared for all solutions           | Model-conversion tools
+  .venv            | Shared for all solutions           | Python environment
+  model            | Shared for all solutions           | Model sources
+
+  Each solution directory contains its related build and MLOps files. All
+  solutions share `model_conversion`, `.venv`, and `model` at workspace level.
+
+
