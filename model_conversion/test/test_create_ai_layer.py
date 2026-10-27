@@ -146,6 +146,19 @@ class CreateAiLayerTests(unittest.TestCase):
         self.assertIn("component: Machine Learning:ExecuTorch Operators:Portable add", layer)
         self.assertIn("file: ./model_pte.c", layer)
 
+    def test_clayer_uses_absolute_mlops_path_across_windows_drives(self) -> None:
+        mlops_file = Path("C:/temporary/demo.cbuild-mlops.yml")
+        with mock.patch.object(generator.os.path, "relpath", side_effect=ValueError):
+            layer = generator.clayer(
+                {"description": "Demo", "model": {"name": "Network"}},
+                ["Runtime"],
+                ["Portable add"],
+                mlops_file,
+                "1.5.1",
+            )
+
+        self.assertIn(f"create_ai_layer.py {mlops_file}`", layer)
+
     def test_main_writes_all_outputs(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             solution_dir = Path(temporary) / "solutions" / "demo"
