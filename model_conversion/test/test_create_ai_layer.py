@@ -196,7 +196,7 @@ class CreateAiLayerTests(unittest.TestCase):
                 generator.main()
 
             run_in_venv.assert_called_once_with(ROOT)
-            export_model.assert_called_once_with(mock.ANY, {}, solution_dir)
+            export_model.assert_called_once_with(mock.ANY, {}, solution_dir.resolve())
 
             output = solution_dir / "generated"
             self.assertEqual((output / "model.pte").read_bytes(), b"PTE")
